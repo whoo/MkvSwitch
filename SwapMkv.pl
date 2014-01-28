@@ -1,10 +1,10 @@
-#!/usr/bin/perl
+#!/usr/bin/perl 
 #####
-# licence into README
+# licence into README 
+
+use strict;
 
 my $mkvfile= $ARGV[0];
-my $real=0;
-my $cmd="ok";
 
 if ( ! -e $mkvfile ) 
 	{
@@ -19,8 +19,12 @@ my %tb;
 my %dtb;
 
 # Recuperation des informations Track audio avec le compteur de track reelle
+
+my $real;
+my $idx;
 while (<FILE>)
 {
+
 	$a=$_;
 	chomp($a);
 	$idx= $b if ($b)=($a=~/Track number: ([0-9])/); 
@@ -29,9 +33,13 @@ while (<FILE>)
 }
 
 
-
 my @key = sort keys(%tb);
-my $b=0;
+if (@key < 2) 
+{
+print "  \033[94mlol, WTF ".@key." Track \033[00m \n";
+exit (3);
+}
+
 ###### ROR on Table ######## Ugly :)
 # %tb = { 2=>"2", 3=>"3", 4 =>"4"}
 # @key =  2 3 4
@@ -39,6 +47,7 @@ my $b=0;
 # $dtb{ 3 } = $tb{ $key[2] } // $tb{4} = 4
 # $dtb{ 4 } = $tb{ $key[0] } // $tb{2} = 2
 # %tb = { 2=>"3", 3=>"4", 4 =>"2"}
+
 foreach $a (@key)
 {
 $b=($b+1)%@key;
@@ -46,17 +55,16 @@ $dtb{$a}=$tb{$key[$b]};
 }
 
 
-
 #### Finalize command 
-my $out= "mkvpropedit -v \"".$mkvfile."\" ";
-foreach $v (sort keys (%dtb))
+my $out= "mkvpropedit  \"".$mkvfile."\" ";
+foreach  my $v (sort keys (%dtb))
 {
 $out.= " --edit track:".$v." --set track-number=".$dtb{$v};
 }
 ##### Exec command ####
 print "Cmd: \033[92m$out\033[0m\n";
 
-if (-w $mkfile)
+if ( -w $mkvfile)
 {
 system "$out"; 
 }
