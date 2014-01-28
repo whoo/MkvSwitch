@@ -12,12 +12,13 @@ if ( ! -e $mkvfile )
 	exit(2);
 	}
 
-
+# Forcage pour avoir la LANG par defaut
 open(FILE, "LANG=C mkvinfo '".$mkvfile."' |");
 
 my %tb;
 my %dtb;
 
+# Recuperation des informations Track audio avec le compteur de track reelle
 while (<FILE>)
 {
 	$a=$_;
