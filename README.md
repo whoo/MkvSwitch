@@ -1,6 +1,7 @@
 MKvSwitch / Switch audio track into the metadata
 Provide mkvtool command
 
+You need mkvtool / mkvinfo / mkvpropedit
  
 Copyright (C) 2013	Dominique DERRIER
 
