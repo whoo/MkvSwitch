@@ -4,11 +4,11 @@
 
 my $mkvfile= $ARGV[0];
 my $real=0;
-
+my $cmd="ok";
 
 if ( ! -e $mkvfile ) 
 	{
-	print "error no such file\n";
+	print " \033[91m>> No such file\033[0m\n";
 	exit(2);
 	}
 
@@ -31,19 +31,36 @@ while (<FILE>)
 
 my @key = sort keys(%tb);
 my $b=0;
-###### ROR on Table ########
+###### ROR on Table ######## Ugly :)
+# %tb = { 2=>"2", 3=>"3", 4 =>"4"}
+# @key =  2 3 4
+# $dtb{ 2 } = $tb{ $key[1] } // $tb{3} = 3 
+# $dtb{ 3 } = $tb{ $key[2] } // $tb{4} = 4
+# $dtb{ 4 } = $tb{ $key[0] } // $tb{2} = 2
+# %tb = { 2=>"3", 3=>"4", 4 =>"2"}
 foreach $a (@key)
 {
-$dtb{$a}=$tb{$key[($b+1)%@key]};
-$b=$b+1;
+$b=($b+1)%@key;
+$dtb{$a}=$tb{$key[$b]};
 }
 
+
+
 #### Finalize command 
-my $out= "mkvpropedit -v \"".$ARGV[0]."\" ";
+my $out= "mkvpropedit -v \"".$mkvfile."\" ";
 foreach $v (sort keys (%dtb))
 {
 $out.= " --edit track:".$v." --set track-number=".$dtb{$v};
 }
 ##### Exec command ####
-print "$out\n";
-system "$out";
+print "Cmd: \033[92m$out\033[0m\n";
+
+if (-w $mkfile)
+{
+system "$out"; 
+}
+else {
+print " \033[91m>> Not writeable\033[0m\n";
+}
+
+
